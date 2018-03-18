@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-#from . import CsrfExemptSessionAuthentication
+from . import CsrfExemptSessionAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
-#authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-
+authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
 def short_url(request):
     if request.method == 'POST':
