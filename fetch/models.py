@@ -7,5 +7,5 @@ class urls(models.Model):
 
     def __str__(self):
         return "urls: ".format(self.shortURL)
-    
+
 # Create your models here.
