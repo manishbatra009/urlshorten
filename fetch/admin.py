@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import urls
+from .models import URLS
 # Register your models here.
-admin.site.register(urls)
+admin.site.register(URLS)
