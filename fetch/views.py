@@ -12,8 +12,15 @@ from django.core.exceptions import ValidationError
 
 
 #authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+def hash(id):
+    cString = "69q4we3r01ty2uiopas7dfghjk8lzxcv5bnm"
+    if id < 36:
+        return cString[id]
+    else:
+        return hash(id // 36) + cString[id % 36]
+
 def url_shortify(longurl):
-    return
+    return hash(URLS.objects.get(longURL = longurl).id)
 
 def url_verify(longurl):
     val = URLValidator(verify_exists=False)
@@ -42,7 +49,6 @@ def short_url(request):
 
 @csrf_exempt
 def long_url(request):
-
     shorturl = json.loads(request.body)[short_url]
     if URLS.objects.get(shortURL = shorturl):
         u = URLS.objects.get(shortURL = shorturl)
@@ -54,12 +60,59 @@ def long_url(request):
 
 @csrf_exempt
 def short_urls(request):
-    longurls = json.loads(request.body)[long_url]
-    return HttpResponse("3")
+    longurls = json.loads(request.body)[long_urls]
+    j={}
+    valid=[]
+    invalid=[]
+    for l in longurls:
+        if url_verify(l):
+            if URLS.objects.get(longURL=l):
+                u = URLS.objects.get(longURL=l)
+                j[l] = u.shortURL
+            else:
+                shorturl = url_shortify(l)
+                u = URLS()
+                u.longURL = l
+                u.shortURL = shorturl
+                j[l] = shorturl
+        else:
+            invalid.append(l)
+    if invalid:
+        return JsonResponse({'invalid_urls':invalid})
+    else:
+        return JsonResponse(j)
 
 @csrf_exempt
 def long_urls(request):
-    return HttpResponse("4")
+    shorturls = json.loads(request.body)[short_urls]
+    j = {}
+    valid = []
+    invalid = []
+    for s in shorturls:
+        if URLS.objects.get(shortURL=s):
+            u = URLS.objects.get(shortURL=s)
+            j[s] = u.longURL
+        else:
+            invalid.append(s)
+    if invalid:
+        return JsonResponse({'invalid_urls': invalid})
+    else:
+        return JsonResponse(j)
+
+
+@csrf_exempt
+def clean_urls(request):
+    URLS.objects.all().delete()
+    return JsonResponse({'status': 'success'})
+
+@csrf_exempt
+def redirect(request):
+    s = hash
+    l = URLS.objects.get(shortURL = s).longURL
+    return redirect(l)
+
+
+
 
 def count(request):
     shorturl = json.loads(request.body)[short_url]
@@ -68,6 +121,7 @@ def count(request):
         return JsonResponse({'count':u.count})
     else:
         return HttpResponse("error")
+
 
 
 def index(request):

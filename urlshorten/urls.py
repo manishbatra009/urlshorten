@@ -15,8 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include,path
+import fetch
 
 urlpatterns = [
     path('fetch/', include('fetch.urls')),
+    path('clean-urls/', fetch.views.clean_urls, name='clean_urls'),
+    path('<hash>/', fetch.views.redirect, name='redirect'),
     path('admin/', admin.site.urls),
 ]

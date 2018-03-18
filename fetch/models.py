@@ -1,7 +1,8 @@
 from django.db import models
 
 class URLS(models.Model):
-    longURL = models.TextField(blank=False)
+    id = models.AutoField(primary_key=True)
+    longURL = models.CharField()
     shortURL = models.CharField(max_length=8)
     count = models.IntegerField()
 
